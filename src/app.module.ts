@@ -7,6 +7,8 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { configService } from './core/config.service';
 import { SalonModule } from './modules/salon/salon.module';
+import { ServiceModule } from './modules/service/service.module';
+import { AppointmentModule } from './modules/appointment/appointment.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { SalonModule } from './modules/salon/salon.module';
     UserModule,
     AuthModule,
     SalonModule,
+    ServiceModule,
+    AppointmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
