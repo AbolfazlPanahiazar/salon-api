@@ -28,9 +28,15 @@ export class UserController {
 
   @Post('/admin')
   @AdminEndpoint()
-  create(@Body() createUserDto: CreateUserDto) {
+  createAdmin(@Body() createUserDto: CreateUserDto) {
     return this.userService.create({ ...createUserDto, isAdmin: true });
   }
+
+  // @Post('/barber')
+  // @AdminEndpoint()
+  // createBarber(@Body() createUserDto: CreateUserDto) {
+  //   return this.userService.create({ ...createUserDto, isBarber: true });
+  // }
 
   @Get(':id')
   @AdminEndpoint()

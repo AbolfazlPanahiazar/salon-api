@@ -5,6 +5,7 @@
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AdminJwtAuthGuard } from 'src/modules/auth/classes/admin.guard';
+import { SalonOwnerJwtAuthGuard } from 'src/modules/auth/classes/salon-owner.guard';
 import { UserJwtAuthGuard } from 'src/modules/auth/classes/user.guard';
 
 export function PublicEndpoint() {
@@ -17,4 +18,8 @@ export function UserEndpoint() {
 
 export function AdminEndpoint() {
   return applyDecorators(ApiBearerAuth(), UseGuards(AdminJwtAuthGuard));
+}
+
+export function SalonOwnerEndpoint() {
+  return applyDecorators(ApiBearerAuth(), UseGuards(SalonOwnerJwtAuthGuard));
 }

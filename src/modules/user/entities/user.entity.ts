@@ -28,6 +28,10 @@ export class UserEntity extends BaseEntity<UserEntity> {
   @Column({ default: false, name: 'is_store_owner' })
   isStoreOwner!: boolean;
 
+  @Exclude({ toPlainOnly: true })
+  @Column({ default: false, name: 'is_barber' })
+  isBarber!: boolean;
+
   @Column({ type: 'varchar', name: 'first_name', nullable: true })
   firstName!: string | null;
 
