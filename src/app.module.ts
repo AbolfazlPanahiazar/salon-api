@@ -9,6 +9,7 @@ import { configService } from './core/config.service';
 import { SalonModule } from './modules/salon/salon.module';
 import { ServiceModule } from './modules/service/service.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AppointmentModule } from './modules/appointment/appointment.module';
     SalonModule,
     ServiceModule,
     AppointmentModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
