@@ -1,7 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import {
+  DeleteResult,
+  FindOptionsWhere,
+  InsertResult,
+  Repository,
+} from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -38,12 +43,12 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  create(createUserDto: Partial<UserEntity>): Promise<InsertResult> {
+    return this.userRepository.insert(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll(): Promise<UserEntity[]> {
+    return this.userRepository.find();
   }
 
   findOne(find: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
@@ -68,7 +73,7 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: number): Promise<DeleteResult> {
+    return this.userRepository.delete({ id });
   }
 }

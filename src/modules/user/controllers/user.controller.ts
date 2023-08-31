@@ -6,37 +6,54 @@ import {
   Patch,
   Param,
   Delete,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { AdminEndpoint, UserEndpoint } from 'src/core/swagger.decorator';
+import { User } from 'src/core/decorators/user.decorator';
+import { UserEntity } from '../entities/user.entity';
+import { DeleteResult } from 'typeorm';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
   @Get()
-  findAll() {
+  @AdminEndpoint()
+  findAll(): Promise<UserEntity[]> {
     return this.userService.findAll();
   }
 
+  @Post('/admin')
+  @AdminEndpoint()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create({ ...createUserDto, isAdmin: true });
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @AdminEndpoint()
+  findOne(@Param('id') id: string): Promise<UserEntity> {
     return this.userService.findOne({ id: +id });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UserEndpoint()
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @User() user: UserEntity,
+  ) {
+    if (user.id !== +id) {
+      throw new UnauthorizedException(`You can only edit your own profile`);
+    }
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @AdminEndpoint()
+  remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.userService.remove(+id);
   }
 }
