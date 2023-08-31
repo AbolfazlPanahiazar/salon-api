@@ -1,7 +1,16 @@
 import { BaseEntity } from 'src/core/entities.entity';
 import * as bcrypt from 'bcryptjs';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { SalonEntity } from 'src/modules/salon/entities/salon.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity<UserEntity> {
@@ -40,6 +49,10 @@ export class UserEntity extends BaseEntity<UserEntity> {
 
   @Column({ type: 'timestamp', name: 'last_login_at', nullable: true })
   lastLoginAt!: Date | null;
+
+  @OneToOne(() => SalonEntity)
+  @OneToOne(() => SalonEntity, (salon) => salon.owner)
+  salon!: SalonEntity | null;
 
   @BeforeInsert()
   beforeInsert(): void {

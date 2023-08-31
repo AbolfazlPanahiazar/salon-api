@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { SalonEntity } from './entities/salon.entity';
-import { DeleteResult, FindManyOptions, InsertResult, Repository, UpdateResult } from 'typeorm';
+import { SalonEntity } from '../entities/salon.entity';
+import {
+  DeleteResult,
+  FindManyOptions,
+  InsertResult,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
