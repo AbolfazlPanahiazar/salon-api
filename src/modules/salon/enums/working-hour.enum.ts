@@ -1,0 +1,14 @@
+export enum WorkingHoursEnum {
+  EIGHT,
+  NINE,
+  TEN,
+  ELEVEN,
+  TWELEWE,
+  THIRTEEN,
+  FOURTEEN,
+  FIFTEEN,
+  SIXTEEN,
+  SEVENTEEN,
+  EIGHTEEN,
+  NINETEEN,
+}
