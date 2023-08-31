@@ -1,9 +1,10 @@
 import { BaseEntity } from 'src/core/entities.entity';
 import * as bcrypt from 'bcryptjs';
-import { BeforeInsert, BeforeUpdate, Column, Index, OneToMany } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-export class User extends BaseEntity<User> {
+@Entity({ name: 'users' })
+export class UserEntity extends BaseEntity<UserEntity> {
   @Column({ unique: true, nullable: true, type: 'varchar' })
   @Index()
   email!: string | null;
