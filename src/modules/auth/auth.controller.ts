@@ -5,6 +5,7 @@ import { User } from 'src/core/decorators/user.decorator';
 import { PublicEndpoint, UserEndpoint } from 'src/core/swagger.decorator';
 import { UserService } from '../user/services/user.service';
 import { serialize } from 'src/core/utils/serialize';
+import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -42,7 +43,11 @@ export class AuthController {
   async registerUser(
     @Body() body: RegisterDto,
   ): Promise<{ user: UserEntity; token: string }> {
-    const user = await this.userService.save({ ...body, isStoreOwner: true });
+    const user = await this.userService.save({
+      ...body,
+      isStoreOwner: true,
+      password: bcrypt.hashSync(body.password, 10),
+    });
 
     const token = this.authService.generateToken(user.id!, { tempToken: true });
 
@@ -56,7 +61,29 @@ export class AuthController {
   async registerSalon(
     @Body() body: RegisterDto,
   ): Promise<{ user: UserEntity; token: string }> {
-    const user = await this.userService.save({ ...body, isStoreOwner: true });
+    const user = await this.userService.save({
+      ...body,
+      isStoreOwner: true,
+      password: bcrypt.hashSync(body.password, 10),
+    });
+
+    const token = this.authService.generateToken(user.id!, { tempToken: true });
+
+    await this.authService.saveUserLastLogin(user.id!);
+
+    return { user: serialize(user), token };
+  }
+
+  @Post('/register/admin')
+  @PublicEndpoint()
+  async registerAdmin(
+    @Body() body: RegisterDto,
+  ): Promise<{ user: UserEntity; token: string }> {
+    const user = await this.userService.save({
+      ...body,
+      isAdmin: true,
+      password: bcrypt.hashSync(body.password, 10),
+    });
 
     const token = this.authService.generateToken(user.id!, { tempToken: true });
 
