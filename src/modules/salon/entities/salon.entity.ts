@@ -50,5 +50,5 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
 
   @ManyToMany(() => ServiceEntity, (servie) => servie.salons)
   @JoinTable()
-  roles: ServiceEntity[];
+  services: ServiceEntity[];
 }

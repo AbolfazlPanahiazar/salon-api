@@ -30,7 +30,7 @@ export class SalonService {
     const query = this.salonRepository.createQueryBuilder('salons');
 
     if (search) {
-      query.andWhere('salons.name LIKE :name', { name: `%${search}%` });
+      query.where('salons.name LIKE :name', { name: `%${search}%` });
     }
 
     const [salons, count] = await query

@@ -26,6 +26,7 @@ import { UpdateSalonServiceDto } from './dto/update-salon-service.dto';
 import { SalonServicesEntity } from './entities/salon-service.entity';
 import { QueryAllSalonsDto } from './dto/query-all-salons.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/core/dtos/pagination.dto';
 
 @Controller('salon')
 @ApiTags(SalonController.name)
@@ -117,8 +118,10 @@ export class SalonController {
 
   @Get('/salon-service')
   @PublicEndpoint()
-  findAllSalonServices(): Promise<SalonServicesEntity[]> {
-    return this.salonServiceService.findAll();
+  findAllSalonServices(
+    @Query() { limit, skip, search }: PaginationDto,
+  ): Promise<{ salon_services: SalonServicesEntity[]; count: number }> {
+    return this.salonServiceService.findManyAndCount(limit, skip, search);
   }
 
   @Get('/salon-service/:id')

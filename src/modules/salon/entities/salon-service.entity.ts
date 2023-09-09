@@ -47,6 +47,6 @@ export class SalonServicesEntity extends BaseEntity<SalonServicesEntity> {
   })
   reservedHours!: WorkingHoursEnum[];
 
-  @CreateDateColumn({ name: 'reserve_date' })
+  @CreateDateColumn({ name: 'reserve_date', default: new Date() })
   reserveDate!: Date;
 }

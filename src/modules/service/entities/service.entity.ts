@@ -13,7 +13,7 @@ export class ServiceEntity extends BaseEntity<ServiceEntity> {
   @Column({ nullable: true, type: 'varchar' })
   image!: string | null;
 
-  @ManyToMany(() => SalonEntity, (user) => user.roles)
+  @ManyToMany(() => SalonEntity, (user) => user.services)
   @JoinTable()
   salons: SalonEntity[];
 }
