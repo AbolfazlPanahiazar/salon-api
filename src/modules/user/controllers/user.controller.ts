@@ -7,6 +7,10 @@ import {
   Param,
   Delete,
   UnauthorizedException,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -15,15 +19,24 @@ import { AdminEndpoint, UserEndpoint } from 'src/core/swagger.decorator';
 import { User } from 'src/core/decorators/user.decorator';
 import { UserEntity } from '../entities/user.entity';
 import { DeleteResult } from 'typeorm';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/core/dtos/pagination.dto';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { UploadDto } from '../dto/upload.dto';
 
 @Controller('user')
+@ApiTags(UserController.name)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
   @AdminEndpoint()
-  findAll(): Promise<UserEntity[]> {
-    return this.userService.findAll();
+  findAll(
+    @Query() { limit, search, skip }: PaginationDto,
+  ): Promise<{ users: UserEntity[]; count: number }> {
+    return this.userService.findManyAndCount();
   }
 
   @Post('/admin')
@@ -32,11 +45,33 @@ export class UserController {
     return this.userService.create({ ...createUserDto, isAdmin: true });
   }
 
-  // @Post('/barber')
-  // @AdminEndpoint()
-  // createBarber(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create({ ...createUserDto, isBarber: true });
-  // }
+  @Post('upload')
+  @UserEndpoint()
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FilesInterceptor('file', 200, {
+      storage: diskStorage({
+        destination: './uploads/',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  uploadMultipleFiles(@UploadedFiles() files, @Body() _: UploadDto) {
+    const response = [];
+    files.forEach((file) => {
+      const fileReponse = {
+        filename: file.filename,
+      };
+      response.push(fileReponse);
+    });
+    return response;
+  }
 
   @Get(':id')
   @AdminEndpoint()

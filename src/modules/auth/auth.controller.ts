@@ -8,8 +8,10 @@ import { serialize } from 'src/core/utils/serialize';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags(AuthController.name)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

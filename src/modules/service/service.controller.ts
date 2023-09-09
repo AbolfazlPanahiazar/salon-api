@@ -17,8 +17,10 @@ import {
 } from 'src/core/swagger.decorator';
 import { ServiceEntity } from './entities/service.entity';
 import { DeleteResult } from 'typeorm';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('service')
+@ApiTags(ServiceController.name)
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 

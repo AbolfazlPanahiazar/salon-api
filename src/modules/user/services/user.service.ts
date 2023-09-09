@@ -46,6 +46,22 @@ export class UserService {
     return this.userRepository.insert(createUserDto);
   }
 
+  async findManyAndCount(
+    limit = 20,
+    skip = 0,
+    search?: string,
+  ): Promise<{ users: UserEntity[]; count: number }> {
+    const query = this.userRepository.createQueryBuilder('users');
+
+    if (search) {
+      query.andWhere('users.email LIKE :email', { email: `%${search}%` });
+    }
+
+    const [users, count] = await query.take(limit).skip(skip).getManyAndCount();
+
+    return { users, count };
+  }
+
   findAll(): Promise<UserEntity[]> {
     return this.userRepository.find();
   }

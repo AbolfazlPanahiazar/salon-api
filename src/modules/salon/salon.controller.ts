@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SalonService } from './services/salon.service';
 import { CreateSalonDto } from './dto/create-salon.dto';
@@ -23,8 +24,11 @@ import { CreateSalonServiceDto } from './dto/create-salon-service.dto';
 import { DeleteResult, InsertResult } from 'typeorm';
 import { UpdateSalonServiceDto } from './dto/update-salon-service.dto';
 import { SalonServicesEntity } from './entities/salon-service.entity';
+import { QueryAllSalonsDto } from './dto/query-all-salons.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('salon')
+@ApiTags(SalonController.name)
 export class SalonController {
   constructor(
     private readonly salonService: SalonService,
@@ -48,14 +52,16 @@ export class SalonController {
 
   @Get('/mine')
   @SalonOwnerEndpoint()
-  findMine(@User() user: UserEntity): Promise<SalonEntity[]> {
-    return this.salonService.findAll({ where: { owner_id: user.id } });
+  findMine(@User() user: UserEntity): Promise<SalonEntity> {
+    return this.salonService.findByOwnerId(user.id);
   }
 
   @Get()
   @PublicEndpoint()
-  findAll(): Promise<SalonEntity[]> {
-    return this.salonService.findAll();
+  findAll(
+    @Query() { limit, search, skip }: QueryAllSalonsDto,
+  ): Promise<{ salons: SalonEntity[]; count: number }> {
+    return this.salonService.findManyAndCount(limit, skip, search);
   }
 
   @Get(':id')

@@ -2,6 +2,11 @@ import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { BaseConfig } from './base-config.service';
 import * as redisStore from 'cache-manager-redis-store';
 import { CacheModuleOptions } from '@nestjs/cache-manager';
+import { PaginationDto } from './dtos/pagination.dto';
+import { ValidationResponse } from './validation.response';
+import { UnauthorizedResponse } from './unauthorized.response';
+import { PaginationSchema } from './pagination.response';
+import { FilterPaginationSchema, FilterSchema } from './filter.reponse';
 
 class Config extends BaseConfig {
   getHostAndPort(): { host: string; port?: string } {
@@ -19,7 +24,13 @@ class Config extends BaseConfig {
 
   public getExtraModels(): SwaggerDocumentOptions {
     return {
-      extraModels: [],
+      extraModels: [
+        ValidationResponse,
+        UnauthorizedResponse,
+        PaginationSchema,
+        FilterSchema,
+        FilterPaginationSchema,
+      ],
     };
   }
 
