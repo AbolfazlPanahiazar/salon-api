@@ -9,7 +9,6 @@ import {
   UnauthorizedException,
   Query,
   UseInterceptors,
-  UploadedFile,
   UploadedFiles,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
@@ -21,7 +20,7 @@ import { UserEntity } from '../entities/user.entity';
 import { DeleteResult } from 'typeorm';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from 'src/core/dtos/pagination.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UploadDto } from '../dto/upload.dto';
@@ -90,6 +89,12 @@ export class UserController {
       throw new UnauthorizedException(`You can only edit your own profile`);
     }
     return this.userService.update(+id, updateUserDto);
+  }
+
+  @Patch('/me')
+  @UserEndpoint()
+  updateMe(@Body() updateUserDto: UpdateUserDto, @User() user: UserEntity) {
+    return this.userService.update(+user.id, updateUserDto);
   }
 
   @Delete(':id')

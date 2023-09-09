@@ -1,7 +1,16 @@
 import { BaseEntity } from 'src/core/entities.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { SalonServicesEntity } from './salon-service.entity';
+import { ServiceEntity } from 'src/modules/service/entities/service.entity';
 
 @Entity({ name: 'salons' })
 export class SalonEntity extends BaseEntity<SalonEntity> {
@@ -37,5 +46,9 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
   map!: string | null;
 
   @OneToMany(() => SalonServicesEntity, (ss) => ss.salon_id)
-  services: SalonServicesEntity[];
+  salon_services: SalonServicesEntity[];
+
+  @ManyToMany(() => ServiceEntity, (servie) => servie.salons)
+  @JoinTable()
+  roles: ServiceEntity[];
 }

@@ -88,8 +88,7 @@ export class SalonController {
       salon_id: user.salon.id,
       availableHours: createSalonServiceDto.availableHours,
       reservedHours: createSalonServiceDto.reservedHours,
-      reserveAt: new Date(createSalonServiceDto.reserveAt),
-      service_id: createSalonServiceDto.service_id,
+      reserveDate: new Date(createSalonServiceDto.reserveAt),
     });
   }
 
@@ -102,8 +101,7 @@ export class SalonController {
     return this.salonServiceService.update(+id, {
       availableHours: updateSalonServiceDto.availableHours,
       reservedHours: updateSalonServiceDto.reservedHours,
-      reserveAt: new Date(updateSalonServiceDto.reserveAt),
-      service_id: updateSalonServiceDto.service_id,
+      reserveDate: new Date(updateSalonServiceDto.reserveAt),
     });
   }
 

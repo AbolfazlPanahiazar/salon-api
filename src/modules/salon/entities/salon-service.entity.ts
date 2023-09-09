@@ -47,16 +47,6 @@ export class SalonServicesEntity extends BaseEntity<SalonServicesEntity> {
   })
   reservedHours!: WorkingHoursEnum[];
 
-  @CreateDateColumn({ name: 'reserve_at' })
-  reserveAt!: Date;
-
-  @Column({ default: 0 })
-  service_id!: number;
-
-  @ManyToOne(() => ServiceEntity)
-  @JoinColumn({
-    name: 'service_id',
-    referencedColumnName: 'id',
-  })
-  service!: ServiceEntity;
+  @CreateDateColumn({ name: 'reserve_date' })
+  reserveDate!: Date;
 }

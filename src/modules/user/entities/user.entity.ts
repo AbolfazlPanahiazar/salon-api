@@ -29,11 +29,9 @@ export class UserEntity extends BaseEntity<UserEntity> {
   @Column({ nullable: true, name: 'image' })
   image!: string;
 
-  @Exclude({ toPlainOnly: true })
   @Column({ default: false, name: 'is_admin' })
   isAdmin!: boolean;
 
-  @Exclude({ toPlainOnly: true })
   @Column({ default: false, name: 'is_store_owner' })
   isStoreOwner!: boolean;
 

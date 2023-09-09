@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderEntity } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
-  create(createOrderDto: CreateOrderDto) {
+  create(createOrderDto: Partial<OrderEntity>) {
     return 'This action adds a new order';
   }
 

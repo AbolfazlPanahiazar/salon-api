@@ -1,17 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { UserEndpoint } from 'src/core/swagger.decorator';
+import { User } from 'src/core/decorators/user.decorator';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Controller('order')
 @ApiTags(OrderController.name)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @Post('place-order')
+  @UserEndpoint()
+  create(@Body() createOrderDto: CreateOrderDto, @User() user: UserEntity) {
+    return this.orderService.create({ ...createOrderDto, user_id: user.id });
   }
 
   @Get()
