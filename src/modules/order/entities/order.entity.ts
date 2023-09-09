@@ -1,7 +1,6 @@
 import { Transform } from 'class-transformer';
 import { BaseEntity } from 'src/core/entities.entity';
 import { SalonServicesEntity } from 'src/modules/salon/entities/salon-service.entity';
-import { SalonEntity } from 'src/modules/salon/entities/salon.entity';
 import { WorkingHoursEnum } from 'src/modules/salon/enums/working-hour.enum';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
@@ -31,14 +30,4 @@ export class OrderEntity extends BaseEntity<OrderEntity> {
     referencedColumnName: 'id',
   })
   user!: UserEntity;
-
-  @Column({ default: 0 })
-  salon_id!: number;
-
-  @OneToOne(() => SalonEntity)
-  @JoinColumn({
-    name: 'salon_id',
-    referencedColumnName: 'id',
-  })
-  salon!: SalonEntity;
 }

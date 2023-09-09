@@ -6,15 +6,10 @@ import { WorkingHoursEnum } from 'src/modules/salon/enums/working-hour.enum';
 export class CreateOrderDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber({
-    allowNaN: false,
-  })
   salon_service_id!: number;
 
   @IsNotEmpty()
-  @ApiProperty({
-    type: WorkingHoursEnum,
-  })
+  @ApiProperty()
   @StringToEnum(WorkingHoursEnum)
   time!: WorkingHoursEnum;
 }

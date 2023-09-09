@@ -9,14 +9,13 @@ import {
 import { SalonEntity } from './salon.entity';
 import { Transform } from 'class-transformer';
 import { WorkingHoursEnum } from '../enums/working-hour.enum';
-import { ServiceEntity } from 'src/modules/service/entities/service.entity';
 
 @Entity({ name: 'salon-services' })
 export class SalonServicesEntity extends BaseEntity<SalonServicesEntity> {
   @Column({ default: 0 })
   salon_id!: number;
 
-  @ManyToOne(() => SalonEntity)
+  @ManyToOne(() => SalonEntity,)
   @JoinColumn({
     name: 'salon_id',
     referencedColumnName: 'id',
