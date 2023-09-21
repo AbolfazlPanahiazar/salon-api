@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateServiceDto } from '../dto/create-service.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateServiceDto } from '../dto/update-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceEntity } from '../entities/service.entity';
-import { DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, FindOptionsWhere, Repository } from 'typeorm';
 
 @Injectable()
 export class ServiceService {
@@ -12,23 +11,42 @@ export class ServiceService {
     private readonly serviceRepository: Repository<ServiceEntity>,
   ) {}
 
-  create(createServiceDto: Partial<ServiceEntity>): Promise<InsertResult> {
-    return this.serviceRepository.insert(createServiceDto);
+  create(createServiceDto: Partial<ServiceEntity>): Promise<ServiceEntity> {
+    return this.serviceRepository.save(createServiceDto);
   }
 
-  findAll(): Promise<ServiceEntity[]> {
-    return this.serviceRepository.find();
+  async findManyAndCount(
+    limit = 20,
+    skip = 0,
+    search?: string,
+  ): Promise<{ services: ServiceEntity[]; count: number }> {
+    const query = this.serviceRepository.createQueryBuilder('services');
+    if (search) {
+      query.andWhere('services.name LIKE :name', { name: `%${search}%` });
+    }
+    const [services, count] = await query
+      .take(limit)
+      .skip(skip)
+      .getManyAndCount();
+    return { services, count };
   }
 
-  findOne(id: number): Promise<ServiceEntity> {
-    return this.serviceRepository.findOneOrFail({ where: { id } });
+  async findOne(find: FindOptionsWhere<ServiceEntity>): Promise<ServiceEntity> {
+    const service = await this.serviceRepository.findOne({
+      where: { ...find },
+    });
+    if (!service) {
+      throw new NotFoundException(`Service not found.`);
+    }
+    return service;
   }
 
-  update(
+  async update(
     id: number,
     updateServiceDto: UpdateServiceDto,
-  ): Promise<UpdateResult> {
-    return this.serviceRepository.update({ id }, updateServiceDto);
+  ): Promise<ServiceEntity> {
+    await this.serviceRepository.update({ id }, updateServiceDto);
+    return this.serviceRepository.findOne({ where: { id } });
   }
 
   remove(id: number): Promise<DeleteResult> {

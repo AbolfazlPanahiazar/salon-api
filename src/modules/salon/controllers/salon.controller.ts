@@ -36,7 +36,7 @@ export class SalonController {
     private readonly salonServiceService: SalonServiceService,
   ) {}
 
-  @Post()
+  @Post('register-salon')
   @SalonOwnerEndpoint()
   create(
     @Body() createSalonDto: CreateSalonDto,
