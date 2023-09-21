@@ -7,15 +7,15 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ServiceService } from './service.service';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
+import { ServiceService } from '../services/service.service';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { UpdateServiceDto } from '../dto/update-service.dto';
 import {
   AdminEndpoint,
   PublicEndpoint,
   SalonOwnerEndpoint,
 } from 'src/core/swagger.decorator';
-import { ServiceEntity } from './entities/service.entity';
+import { ServiceEntity } from '../entities/service.entity';
 import { DeleteResult } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
 

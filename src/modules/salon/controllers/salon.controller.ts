@@ -8,23 +8,23 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { SalonService } from './services/salon.service';
-import { CreateSalonDto } from './dto/create-salon.dto';
-import { UpdateSalonDto } from './dto/update-salon.dto';
+import { SalonService } from '../services/salon.service';
+import { CreateSalonDto } from '../dtos/create-salon.dto';
+import { UpdateSalonDto } from '../dtos/update-salon.dto';
 import {
   AdminEndpoint,
   PublicEndpoint,
   SalonOwnerEndpoint,
 } from 'src/core/swagger.decorator';
 import { User } from 'src/core/decorators/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
-import { SalonEntity } from './entities/salon.entity';
-import { SalonServiceService } from './services/salon-service.service';
-import { CreateSalonServiceDto } from './dto/create-salon-service.dto';
+import { UserEntity } from '../../user/entities/user.entity';
+import { SalonEntity } from '../entities/salon.entity';
+import { SalonServiceService } from '../services/salon-service.service';
+import { CreateSalonServiceDto } from '../dtos/create-salon-service.dto';
 import { DeleteResult, InsertResult } from 'typeorm';
-import { UpdateSalonServiceDto } from './dto/update-salon-service.dto';
-import { SalonServicesEntity } from './entities/salon-service.entity';
-import { QueryAllSalonsDto } from './dto/query-all-salons.dto';
+import { UpdateSalonServiceDto } from '../dtos/update-salon-service.dto';
+import { SalonServicesEntity } from '../entities/salon-service.entity';
+import { QueryAllSalonsDto } from '../dtos/query-all-salons.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from 'src/core/dtos/pagination.dto';
 

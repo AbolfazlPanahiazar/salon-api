@@ -10,45 +10,74 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AdminEndpoint, UserEndpoint } from 'src/core/swagger.decorator';
 import { User } from 'src/core/decorators/user.decorator';
 import { UserEntity } from '../entities/user.entity';
 import { DeleteResult } from 'typeorm';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { PaginationDto } from 'src/core/dtos/pagination.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { UploadDto } from '../dto/upload.dto';
+import { UploadDto } from '../dtos/upload.dto';
 
 @Controller('user')
 @ApiTags(UserController.name)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
+  @ApiResponse({ status: 201, type: UserEntity })
+  @Post('/create-admin')
+  @AdminEndpoint()
+  createAdmin(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
+    return this.userService.save({ ...createUserDto, isAdmin: true });
+  }
+
+  @ApiResponse({ status: 200, type: UserEntity, isArray: true })
+  @Get('/get-all-users')
   @AdminEndpoint()
   findAll(
     @Query() { limit, search, skip }: PaginationDto,
   ): Promise<{ users: UserEntity[]; count: number }> {
-    return this.userService.findManyAndCount();
+    return this.userService.findManyAndCount(limit, skip, search);
   }
 
-  @Post('/admin')
+  @ApiResponse({ status: 200, type: UserEntity })
+  @Get('/get-user-by-id/:id')
   @AdminEndpoint()
-  createAdmin(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create({ ...createUserDto, isAdmin: true });
+  findOne(@Param('id') id: string): Promise<UserEntity> {
+    return this.userService.findOne({ id: +id });
   }
 
-  @Post('upload')
+  @Patch('/update-user/:id')
+  @AdminEndpoint()
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(+id, updateUserDto);
+  }
+
+  @Delete('/delete-user/:id')
+  @AdminEndpoint()
+  remove(@Param('id') id: string): Promise<DeleteResult> {
+    return this.userService.remove(+id);
+  }
+
+  @Post('/upload-file')
   @UserEndpoint()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
-    FilesInterceptor('file', 200, {
+    FilesInterceptor('files', 200, {
       storage: diskStorage({
         destination: './uploads/',
         filename: (req, file, cb) => {
@@ -70,36 +99,5 @@ export class UserController {
       response.push(fileReponse);
     });
     return response;
-  }
-
-  @Get(':id')
-  @AdminEndpoint()
-  findOne(@Param('id') id: string): Promise<UserEntity> {
-    return this.userService.findOne({ id: +id });
-  }
-
-  @Patch(':id')
-  @UserEndpoint()
-  update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-    @User() user: UserEntity,
-  ) {
-    if (user.id !== +id) {
-      throw new UnauthorizedException(`You can only edit your own profile`);
-    }
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Patch('/me')
-  @UserEndpoint()
-  updateMe(@Body() updateUserDto: UpdateUserDto, @User() user: UserEntity) {
-    return this.userService.update(+user.id, updateUserDto);
-  }
-
-  @Delete(':id')
-  @AdminEndpoint()
-  remove(@Param('id') id: string): Promise<DeleteResult> {
-    return this.userService.remove(+id);
   }
 }

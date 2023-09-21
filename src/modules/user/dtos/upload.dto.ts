@@ -4,5 +4,5 @@ import { IsOptional } from 'class-validator';
 export class UploadDto {
   @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
-  file!: string;
+  files!: string;
 }

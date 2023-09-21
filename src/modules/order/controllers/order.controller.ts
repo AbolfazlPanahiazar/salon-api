@@ -7,13 +7,13 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderService } from '../services/order.service';
+import { CreateOrderDto } from '../dtos/create-order.dto';
+import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UserEndpoint } from 'src/core/swagger.decorator';
 import { User } from 'src/core/decorators/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Controller('order')
 @ApiTags(OrderController.name)

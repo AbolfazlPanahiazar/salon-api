@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserEntity } from '../user/entities/user.entity';
+import { AuthService } from '../services/auth.service';
+import { UserEntity } from '../../user/entities/user.entity';
 import { User } from 'src/core/decorators/user.decorator';
 import { PublicEndpoint, UserEndpoint } from 'src/core/swagger.decorator';
-import { UserService } from '../user/services/user.service';
+import { UserService } from '../../user/services/user.service';
 import { serialize } from 'src/core/utils/serialize';
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from '../dtos/login.dto';
+import { RegisterDto } from '../dtos/register.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')

@@ -1,5 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import {
   DeleteResult,
   FindOptionsWhere,
@@ -17,24 +21,24 @@ export class UserService {
   ) {}
 
   async save(user: Partial<UserEntity>): Promise<UserEntity> {
-    if (user.username) {
-      const userByUsername = await this.userRepository.findOne({
+    if (user.email) {
+      const userByEmail = await this.userRepository.findOne({
         where: {
-          username: user.username,
+          email: user.email,
         },
       });
 
-      if (userByUsername) {
-        if (user.id && user.id != userByUsername.id) {
+      if (userByEmail) {
+        if (user.id && user.id != userByEmail.id) {
           throw new BadRequestException(
-            'Account name already exists, please enter a different one.',
-            'username',
+            'Email already exists, please enter a different one.',
+            'email',
           );
         }
         if (!user.id) {
           throw new BadRequestException(
-            'Account name already exists, please enter a different one.',
-            'username',
+            'Email already exists, please enter a different one.',
+            'email',
           );
         }
       }
@@ -42,8 +46,14 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  create(createUserDto: Partial<UserEntity>): Promise<InsertResult> {
-    return this.userRepository.insert(createUserDto);
+  async findOne(find: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: { ...find },
+    });
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+    return user;
   }
 
   async findManyAndCount(
@@ -64,12 +74,6 @@ export class UserService {
 
   findAll(): Promise<UserEntity[]> {
     return this.userRepository.find();
-  }
-
-  findOne(find: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
-    return this.userRepository.findOneOrFail({
-      where: { ...find },
-    });
   }
 
   findOneByIdForJwt(id: number): Promise<UserEntity | null> {

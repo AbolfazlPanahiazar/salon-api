@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SalonService } from './services/salon.service';
-import { SalonController } from './salon.controller';
+import { SalonController } from './controllers/salon.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SalonEntity } from './entities/salon.entity';
 import { SalonServicesEntity } from './entities/salon-service.entity';

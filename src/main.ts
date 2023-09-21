@@ -19,8 +19,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const options = new DocumentBuilder()
-    .setTitle('Stage Api Endpoints')
-    .setDescription('Salon Api Endpoints description')
+    .setTitle('Salon Api Endpoints')
+    .setDescription('Salon Api Endpoints')
     .setVersion('1')
     .setExternalDoc('Postman Collection', '/api-json')
     .addBearerAuth({

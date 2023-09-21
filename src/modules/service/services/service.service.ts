@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { UpdateServiceDto } from '../dto/update-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceEntity } from './entities/service.entity';
+import { ServiceEntity } from '../entities/service.entity';
 import { DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
