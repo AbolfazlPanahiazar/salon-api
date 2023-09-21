@@ -46,16 +46,6 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async findOne(find: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      where: { ...find },
-    });
-    if (!user) {
-      throw new NotFoundException(`User not found.`);
-    }
-    return user;
-  }
-
   async findManyAndCount(
     limit = 20,
     skip = 0,
@@ -72,8 +62,22 @@ export class UserService {
     return { users, count };
   }
 
-  findAll(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  async findOne(find: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: { ...find },
+    });
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+    return user;
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update({ id }, updateUserDto);
+  }
+
+  remove(id: number): Promise<DeleteResult> {
+    return this.userRepository.delete({ id });
   }
 
   findOneByIdForJwt(id: number): Promise<UserEntity | null> {
@@ -86,13 +90,5 @@ export class UserService {
     find: FindOptionsWhere<UserEntity>,
   ): Promise<UserEntity | null> {
     return this.userRepository.findOne({ where: { ...find } });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update({ id }, updateUserDto);
-  }
-
-  remove(id: number): Promise<DeleteResult> {
-    return this.userRepository.delete({ id });
   }
 }
