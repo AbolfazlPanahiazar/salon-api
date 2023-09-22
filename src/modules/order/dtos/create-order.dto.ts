@@ -42,4 +42,8 @@ export class CreateOrderDto {
   })
   @IsEnum(OrderStatus)
   status: OrderStatus;
+
+  @ApiProperty({ type: Date })
+  @IsNotEmpty()
+  time: Date;
 }

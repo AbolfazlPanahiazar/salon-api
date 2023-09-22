@@ -65,4 +65,8 @@ export class OrderEntity extends BaseEntity<OrderEntity> {
     default: OrderStatus.PENDING,
   })
   status: OrderStatus;
+
+  @ApiProperty()
+  @Column({ type: 'timestamp', nullable: true })
+  time: Date | null;
 }
