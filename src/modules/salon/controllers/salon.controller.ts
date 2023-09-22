@@ -19,45 +19,28 @@ import {
 import { User } from 'src/core/decorators/user.decorator';
 import { UserEntity } from '../../user/entities/user.entity';
 import { SalonEntity } from '../entities/salon.entity';
-import { SalonServiceService } from '../services/salon-service.service';
-import { CreateSalonServiceDto } from '../dtos/create-salon-service.dto';
 import { DeleteResult, InsertResult } from 'typeorm';
-import { UpdateSalonServiceDto } from '../dtos/update-salon-service.dto';
-import { SalonServicesEntity } from '../entities/salon-service.entity';
 import { QueryAllSalonsDto } from '../dtos/query-all-salons.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from 'src/core/dtos/pagination.dto';
 
 @Controller('salon')
 @ApiTags(SalonController.name)
 export class SalonController {
-  constructor(
-    private readonly salonService: SalonService,
-    private readonly salonServiceService: SalonServiceService,
-  ) {}
+  constructor(private readonly salonService: SalonService) {}
 
-  @Post('register-salon')
+  @ApiResponse({ type: SalonEntity, status: 201 })
+  @Post('/register-salon')
   @SalonOwnerEndpoint()
   create(
     @Body() createSalonDto: CreateSalonDto,
     @User() user: UserEntity,
-  ): Promise<InsertResult> {
-    return this.salonService.create({ ...createSalonDto, owner_id: user.id });
+  ): Promise<SalonEntity> {
+    return this.salonService.create(createSalonDto, user.id);
   }
 
-  @Patch(':id')
-  @SalonOwnerEndpoint()
-  update(@Param('id') id: string, @Body() updateSalonDto: UpdateSalonDto) {
-    return this.salonService.update(+id, updateSalonDto);
-  }
-
-  @Get('/mine')
-  @SalonOwnerEndpoint()
-  findMine(@User() user: UserEntity): Promise<SalonEntity> {
-    return this.salonService.findByOwnerId(user.id);
-  }
-
-  @Get()
+  @ApiResponse({ type: SalonEntity, status: 200, isArray: true })
+  @Get('/get-all-salons')
   @PublicEndpoint()
   findAll(
     @Query() { limit, search, skip }: QueryAllSalonsDto,
@@ -65,74 +48,46 @@ export class SalonController {
     return this.salonService.findManyAndCount(limit, skip, search);
   }
 
-  @Get(':id')
+  @ApiResponse({ type: SalonEntity, status: 200 })
+  @Get('/get-salon-by-id/:id')
   @PublicEndpoint()
   findOne(@Param('id') id: string): Promise<SalonEntity> {
     return this.salonService.findOne(+id);
   }
 
-  @Delete(':id')
+  @ApiResponse({ type: SalonEntity, status: 201 })
+  @Patch('/update-salon/:id')
+  @AdminEndpoint()
+  update(
+    @Param('id') id: string,
+    @Body() updateSalonDto: UpdateSalonDto,
+  ): Promise<SalonEntity> {
+    return this.salonService.update(+id, updateSalonDto);
+  }
+
+  @Delete('/delete-salon/:id')
   @AdminEndpoint()
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.salonService.remove(+id);
   }
 
-  //
-
-  @Post('/salon-service')
+  @ApiResponse({ type: SalonEntity, status: 200 })
+  @Get('/mine')
   @SalonOwnerEndpoint()
-  createSalonService(
-    @Body() createSalonServiceDto: CreateSalonServiceDto,
+  findMine(@User() user: UserEntity): Promise<SalonEntity> {
+    return this.salonService.findByOwnerId(user.id);
+  }
+
+  @ApiResponse({ type: SalonEntity, status: 201 })
+  @Patch('/mine')
+  @SalonOwnerEndpoint()
+  updateMine(
     @User() user: UserEntity,
-  ): Promise<InsertResult> {
-    return this.salonServiceService.create({
-      salon_id: user.salon.id,
-      availableHours: createSalonServiceDto.availableHours,
-      reservedHours: createSalonServiceDto.reservedHours,
-      reserveDate: new Date(createSalonServiceDto.reserveAt),
-    });
-  }
-
-  @Patch('/salon-service/:id')
-  @SalonOwnerEndpoint()
-  updateSalonService(
-    @Param('id') id: string,
-    @Body() updateSalonServiceDto: UpdateSalonServiceDto,
-  ) {
-    return this.salonServiceService.update(+id, {
-      availableHours: updateSalonServiceDto.availableHours,
-      reservedHours: updateSalonServiceDto.reservedHours,
-      reserveDate: new Date(updateSalonServiceDto.reserveAt),
-    });
-  }
-
-  @Get('/salon-service/mine')
-  @SalonOwnerEndpoint()
-  findMineSalonServices(
-    @User() user: UserEntity,
-  ): Promise<SalonServicesEntity[]> {
-    return this.salonServiceService.findAll({
-      where: { salon_id: user.salon.id },
-    });
-  }
-
-  @Get('/salon-service')
-  @PublicEndpoint()
-  findAllSalonServices(
-    @Query() { limit, skip, search }: PaginationDto,
-  ): Promise<{ salon_services: SalonServicesEntity[]; count: number }> {
-    return this.salonServiceService.findManyAndCount(limit, skip, search);
-  }
-
-  @Get('/salon-service/:id')
-  @PublicEndpoint()
-  findOneSalonService(@Param('id') id: string): Promise<SalonServicesEntity> {
-    return this.salonServiceService.findOne(+id);
-  }
-
-  @Delete('/salon-service/:id')
-  @AdminEndpoint()
-  removeSalonService(@Param('id') id: string): Promise<DeleteResult> {
-    return this.salonServiceService.remove(+id);
+    @Body() updateSalonByOwnerId: UpdateSalonDto,
+  ): Promise<SalonEntity> {
+    return this.salonService.updateSalonByOwnerId(
+      user.id,
+      updateSalonByOwnerId,
+    );
   }
 }

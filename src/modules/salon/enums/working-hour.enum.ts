@@ -1,8 +1,8 @@
 export enum WorkingHoursEnum {
-  EIGHT,
-  TEN,
-  TWELEWE,
-  FOURTEEN,
-  SIXTEEN,
-  EIGHTEEN,
+  EIGHT = 'EIGHT',
+  TEN = 'TEN',
+  TWELEWE = 'TWELEWE',
+  FOURTEEN = 'FOURTEEN',
+  SIXTEEN = 'SIXTEEN',
+  EIGHTEEN = 'EIGHTEEN',
 }

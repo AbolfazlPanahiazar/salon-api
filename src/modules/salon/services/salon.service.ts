@@ -1,25 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { SalonEntity } from '../entities/salon.entity';
 import {
-  DataSource,
-  DeleteResult,
-  InsertResult,
-  Repository,
-  UpdateResult,
-} from 'typeorm';
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { SalonEntity } from '../entities/salon.entity';
+import { DataSource, DeleteResult, EntityManager, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { CreateSalonDto } from '../dtos/create-salon.dto';
+import { ServiceEntity } from 'src/modules/service/entities/service.entity';
+import { UpdateSalonDto } from '../dtos/update-salon.dto';
 
 @Injectable()
 export class SalonService {
   constructor(
     @InjectRepository(SalonEntity)
     private readonly salonRepository: Repository<SalonEntity>,
+    private readonly entityManager: EntityManager,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
 
-  create(createSalonDto: Partial<SalonEntity>): Promise<InsertResult> {
-    return this.salonRepository.insert(createSalonDto);
+  async create(
+    createSalonDto: CreateSalonDto,
+    owner_id: number,
+  ): Promise<SalonEntity> {
+    const { serviceIds, workingHours, ...rest } = createSalonDto;
+    const salon = await this.salonRepository.findOne({
+      where: { owner_id },
+    });
+    if (salon) {
+      throw new BadRequestException(
+        'You already registered a salon, try to edit it.',
+      );
+    }
+    const newSalon = this.salonRepository.create({
+      owner_id,
+      ...rest,
+      workingHours: workingHours || [],
+    });
+    if (serviceIds && serviceIds.length > 0) {
+      const services = await this.entityManager.findByIds(
+        ServiceEntity,
+        serviceIds,
+      );
+      newSalon.services = services;
+    }
+    return this.salonRepository.save(newSalon);
   }
 
   async findManyAndCount(
@@ -27,71 +53,60 @@ export class SalonService {
     skip = 0,
     search?: string,
   ): Promise<{ salons: SalonEntity[]; count: number }> {
-    const query = this.salonRepository.createQueryBuilder('salons');
-
+    const query = this.salonRepository
+      .createQueryBuilder('salons')
+      .leftJoinAndSelect('salons.services', 'services');
     if (search) {
       query.where('salons.name LIKE :name', { name: `%${search}%` });
     }
-
     const [salons, count] = await query
       .take(limit)
       .skip(skip)
       .getManyAndCount();
-
     return { salons, count };
   }
 
-  async findAll(
-    skip: number = 0,
-    limit: number = 10,
-    search?: string,
-  ): Promise<{ salons: SalonEntity[]; count: number }> {
-    let query = `
-      SELECT
-        s.id,
-        s.name,
-        s.created_at as "createdAt",
-        (count(s.id) OVER())::int AS total,
-      FROM
-        salons s
-    `;
+  async findOne(id: number): Promise<SalonEntity> {
+    try {
+      const salon = await this.salonRepository
+        .createQueryBuilder('salon')
+        .leftJoinAndSelect('salon.services', 'services')
+        .where('salon.id = :id', { id })
+        .getOneOrFail();
 
-    if (search) {
+      return salon;
+    } catch (error) {
+      throw new NotFoundException('Salon not found');
     }
-
-    query += `
-      ORDER BY
-        s.id DESC
-      LIMIT
-        ${limit}
-      OFFSET
-        ${skip}
-      `;
-
-    const res = await this.dataSource.query(query);
-
-    return {
-      salons: res,
-      count: res.length ? res[0].total : 0,
-    };
   }
 
-  findOne(id: number): Promise<SalonEntity> {
-    return this.salonRepository.findOneOrFail({ where: { id } });
-  }
-
-  update(
-    id: number,
-    updateSalonDto: Partial<SalonEntity>,
-  ): Promise<UpdateResult> {
-    return this.salonRepository.update({ id }, updateSalonDto);
+  update(id: number, updateSalonDto: UpdateSalonDto): Promise<SalonEntity> {
+    return this.salonRepository.save({ id, ...updateSalonDto });
   }
 
   remove(id: number): Promise<DeleteResult> {
     return this.salonRepository.delete({ id });
   }
 
-  findByOwnerId(id: number): Promise<SalonEntity> {
-    return this.salonRepository.findOne({ where: { owner_id: id } });
+  async findByOwnerId(id: number): Promise<SalonEntity> {
+    return this.salonRepository.findOne({
+      where: { owner_id: id },
+      relations: ['services'],
+    });
+  }
+
+  async updateSalonByOwnerId(
+    owner_id: number,
+    updateSalonDto: UpdateSalonDto,
+  ): Promise<SalonEntity> {
+    const salon = await this.salonRepository.findOne({
+      where: { owner_id },
+      relations: ['services'],
+    });
+    if (!salon) {
+      throw new NotFoundException('Salon not found, register a salon!');
+    }
+    Object.assign(salon, updateSalonDto);
+    return this.salonRepository.save(salon);
   }
 }

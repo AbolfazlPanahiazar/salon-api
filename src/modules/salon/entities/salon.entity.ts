@@ -9,9 +9,9 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { SalonServicesEntity } from './salon-service.entity';
 import { ServiceEntity } from 'src/modules/service/entities/service.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { WorkingHoursEnum } from '../enums/working-hour.enum';
 
 @Entity({ name: 'salons' })
 export class SalonEntity extends BaseEntity<SalonEntity> {
@@ -19,8 +19,8 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
   @Column({ default: 0 })
   owner_id!: number;
 
-  @ApiProperty({ type: UserEntity })
-  @OneToOne(() => UserEntity)
+  @ApiProperty({ type: () => UserEntity })
+  @OneToOne(() => UserEntity, { lazy: true })
   @JoinColumn({
     name: 'owner_id',
     referencedColumnName: 'id',
@@ -54,4 +54,13 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
   @ApiProperty()
   @Column({ nullable: true, type: 'varchar' })
   map!: string | null;
+
+  @ApiProperty({ type: ServiceEntity, isArray: true })
+  @ManyToMany(() => ServiceEntity)
+  @JoinTable()
+  services: ServiceEntity[];
+
+  @ApiProperty({ isArray: true, enum: WorkingHoursEnum })
+  @Column('simple-array', { nullable: true })
+  workingHours: WorkingHoursEnum[];
 }

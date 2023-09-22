@@ -3,13 +3,11 @@ import { SalonService } from './services/salon.service';
 import { SalonController } from './controllers/salon.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SalonEntity } from './entities/salon.entity';
-import { SalonServicesEntity } from './entities/salon-service.entity';
-import { SalonServiceService } from './services/salon-service.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SalonEntity, SalonServicesEntity])],
+  imports: [TypeOrmModule.forFeature([SalonEntity])],
   controllers: [SalonController],
-  providers: [SalonService, SalonServiceService],
-  exports: [SalonService, SalonServiceService],
+  providers: [SalonService],
+  exports: [SalonService],
 })
 export class SalonModule {}
