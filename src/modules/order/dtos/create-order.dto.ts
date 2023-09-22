@@ -1,15 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { StringToEnum } from 'src/core/swagger.decorator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { WorkingHoursEnum } from 'src/modules/salon/enums/working-hour.enum';
+import { OrderStatus } from '../enums/order-status.enum';
 
 export class CreateOrderDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Salon ID' })
   @IsNotEmpty()
-  salon_service_id!: number;
+  @IsNumber()
+  salon_id: number;
 
-  @IsNotEmpty()
-  @ApiProperty()
-  @StringToEnum(WorkingHoursEnum)
-  time!: WorkingHoursEnum;
+  @ApiProperty({
+    description: 'Reserved Hour',
+    enum: WorkingHoursEnum,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsEnum(WorkingHoursEnum)
+  reservedHour: WorkingHoursEnum | null;
+
+  @ApiProperty({ description: 'Price', nullable: true })
+  @IsOptional()
+  @IsNumber()
+  price: number | null;
+
+  @ApiProperty({ description: 'Service IDs', type: [Number], isArray: true })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  serviceIds: number[];
+
+  @ApiProperty({
+    description: 'Reserved Hour',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+  })
+  @IsEnum(OrderStatus)
+  status: OrderStatus;
 }
