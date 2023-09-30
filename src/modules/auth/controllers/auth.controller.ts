@@ -52,6 +52,22 @@ export class AuthController {
   }
 
   @ApiResponse({ status: 201, type: RegisterLoginResponseDto })
+  @Post('/register/admin')
+  @PublicEndpoint()
+  async registerAdmin(
+    @Body() body: RegisterDto,
+  ): Promise<{ user: UserEntity; token: string }> {
+    const user = await this.userService.save({
+      ...body,
+      isAdmin: true,
+      password: bcrypt.hashSync(body.password, 10),
+    });
+    const token = this.authService.generateToken(user.id!, { tempToken: true });
+    await this.authService.saveUserLastLogin(user.id!);
+    return { user: serialize(user), token };
+  }
+
+  @ApiResponse({ status: 201, type: RegisterLoginResponseDto })
   @Post('login')
   @PublicEndpoint()
   async loginAdmin(

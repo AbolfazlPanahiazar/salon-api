@@ -22,7 +22,7 @@ export class OrderEntity extends BaseEntity<OrderEntity> {
   user_id!: number;
 
   @ApiProperty({ type: () => UserEntity })
-  @OneToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({
     name: 'user_id',
     referencedColumnName: 'id',
