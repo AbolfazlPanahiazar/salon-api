@@ -55,11 +55,11 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
   map!: string | null;
 
   @ApiProperty()
-  @Column({ nullable: true, type: 'number' })
+  @Column({ nullable: true, type: 'integer' })
   start!: number | null;
 
   @ApiProperty()
-  @Column({ nullable: true, type: 'number' })
+  @Column({ nullable: true, type: 'integer' })
   end!: number | null;
 
   @ApiProperty()
