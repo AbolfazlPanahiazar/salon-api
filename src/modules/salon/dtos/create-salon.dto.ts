@@ -2,8 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -44,6 +46,21 @@ export class CreateSalonDto {
   @IsOptional()
   @IsString()
   map?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  start?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  end?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @ApiProperty({ type: [Number], isArray: true })
   @IsOptional()

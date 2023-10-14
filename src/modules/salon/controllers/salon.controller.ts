@@ -23,11 +23,23 @@ import { DeleteResult, InsertResult } from 'typeorm';
 import { QueryAllSalonsDto } from '../dtos/query-all-salons.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from 'src/core/dtos/pagination.dto';
+import { VerifySalonDto } from '../dtos/verify.dto';
 
 @Controller('salon')
 @ApiTags(SalonController.name)
 export class SalonController {
   constructor(private readonly salonService: SalonService) {}
+
+  @ApiResponse({ type: SalonEntity, status: 201 })
+  @Post('/verify-salon/:id')
+  @AdminEndpoint()
+  verifySalon(
+    @Body() body: VerifySalonDto,
+    @User() user: UserEntity,
+    @Param('id') id: string,
+  ): Promise<SalonEntity> {
+    return this.salonService.update(+id, { verified: body.verified });
+  }
 
   @ApiResponse({ type: SalonEntity, status: 201 })
   @Post('/register-salon')
@@ -43,9 +55,9 @@ export class SalonController {
   @Get('/get-all-salons')
   @PublicEndpoint()
   findAll(
-    @Query() { limit, search, skip }: QueryAllSalonsDto,
+    @Query() { limit, search, skip, verified }: QueryAllSalonsDto,
   ): Promise<{ salons: SalonEntity[]; count: number }> {
-    return this.salonService.findManyAndCount(limit, skip, search);
+    return this.salonService.findManyAndCount(limit, skip, search, verified);
   }
 
   @ApiResponse({ type: SalonEntity, status: 200 })

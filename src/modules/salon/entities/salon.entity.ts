@@ -6,7 +6,6 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { ServiceEntity } from 'src/modules/service/entities/service.entity';
@@ -54,6 +53,18 @@ export class SalonEntity extends BaseEntity<SalonEntity> {
   @ApiProperty()
   @Column({ nullable: true, type: 'varchar' })
   map!: string | null;
+
+  @ApiProperty()
+  @Column({ nullable: true, type: 'number' })
+  start!: number | null;
+
+  @ApiProperty()
+  @Column({ nullable: true, type: 'number' })
+  end!: number | null;
+
+  @ApiProperty()
+  @Column({ type: 'boolean', default: false })
+  verified!: boolean;
 
   @ApiProperty({ type: ServiceEntity, isArray: true })
   @ManyToMany(() => ServiceEntity)

@@ -52,6 +52,7 @@ export class SalonService {
     limit = 20,
     skip = 0,
     search?: string,
+    verified?: boolean,
   ): Promise<{ salons: SalonEntity[]; count: number }> {
     const query = this.salonRepository
       .createQueryBuilder('salons')
@@ -59,6 +60,13 @@ export class SalonService {
     if (search) {
       query.where('salons.name LIKE :name', { name: `%${search}%` });
     }
+
+    if (typeof verified === 'boolean') {
+      query.andWhere('salons.verified LIKE :verified', {
+        verified: `%${verified}%`,
+      });
+    }
+
     const [salons, count] = await query
       .take(limit)
       .skip(skip)
